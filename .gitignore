@@ -15,6 +15,7 @@ chromedriver
 
 ## test
 examples/*
+test/*
 
 # Distribution / packaging
 .Python
