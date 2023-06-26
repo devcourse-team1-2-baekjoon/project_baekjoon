@@ -13,6 +13,9 @@ data/*
 ## chrome driver
 chromedriver
 
+## test
+examples/*
+
 # Distribution / packaging
 .Python
 build/

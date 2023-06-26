@@ -2,15 +2,20 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import os 
+import time
 import random
 import concurrent.futures
+import ast
+from copy import deepcopy
+
 
 class Scraper:    
     def __init__(self, flag:str) -> None:
         self.flag = flag
         self.problems = list()
         self.users = list()
-        self.solvedac_users = list()
+        self.workbooks = list()
+        self.workbook_rank = 1
         self.user_agent_list = [
             'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.83 Safari/537.36',
@@ -19,13 +24,20 @@ class Scraper:
     
     
     def get_object_thread(self, base_url:str, start:int, end:int) -> None:
-        for p_index in range(start, end+1):
-            if self.flag == 'problem':
-                self.get_problem_parser(base_url=base_url, p_index = p_index)
-            elif self.flag == 'user':
-                self.get_user_parser(base_url=base_url, p_index = p_index)
-            else:
-                self.get_solvedac_user_parser(base_url=base_url, p_index = p_index)
+        if self.flag not in ['problem', 'user', 'workbook']:
+            raise Exception('invalid flag')
+        
+        else:
+            for p_index in range(start, end+1):
+                time.sleep(random.randint(1,3))
+                if self.flag == 'problem':
+                    self.get_problem_parser(base_url=base_url, p_index = p_index)
+                elif self.flag == 'user':
+                    self.get_user_parser(base_url=base_url, p_index = p_index)
+                elif self.flag == 'workbook':
+                    self.get_workbook_parser(base_url=base_url, p_index = p_index)
+                else:
+                    raise Exception('invalid flag')
     
     
     def get_problem_parser(self, base_url:str, p_index:int) -> None:
@@ -88,34 +100,95 @@ class Scraper:
             print(user)
     
     
-    def get_solvedac_user_parser(self, base_url:str, p_index:int) -> None:
-        url = f'{base_url}?page={str(p_index)}'
-        user_agents_list = self.user_agent_list
-        response = requests.get(url, headers={'User-Agent': random.choice(user_agents_list)})
+    def get_workbook_parser(self, base_url:str, p_index:int) -> None:
+        url = f'{base_url}/top/{str(p_index)}'
+        
+        response = requests.get(url, headers={'User-Agent': random.choice(self.user_agent_list)})
+        
         html = response.text
         soup = BeautifulSoup(html, 'html.parser')
-        # table = soup.find(class_='css-a651il')
-        # print(table)
-        rows = soup.find_all(class_='css-1ojb0xa')
+
+        table = soup.find(class_='table table-striped table-bordered')
+        rows = table.find_all('tr')
         # table header 제거
         rows = rows[1:]
         for row in rows:
             cols = row.find_all('td')            
             cols = [ele.text.strip() for ele in cols]
 
-            user = dict()
-            user["rank"] = cols[0]
-            user["id"] = cols[1]
-            user["ac_rating"] = cols[2]
-            user["class"] = cols[3]
-            user["answer_num"] = cols[4]
-  
-            user_detail = Scraper.user_api(user_id=user["id"])
-            user.update(user_detail)
-            self.solvedac_users.append(user)
-            print(user)   
+            workbook = dict()
+            workbook["workbook_rank"] = self.workbook_rank
+            workbook["workbook_id"] = cols[0]
+            workbook["made_person"] = cols[1]
+            workbook["workbook_title"] = cols[2]
+            problem_list = self.get_workbook_problems_parser(workbook=workbook ,base_url = base_url)
+            
+            self.workbooks.extend(problem_list)
+            # print(problem_list)
+            self.workbook_rank += 1
+
+    
+    def get_workbook_problems_parser(self, workbook:dict, base_url:str) -> list:
+        
+        workbook_id = workbook['workbook_id']
+        url = f'{base_url}/view/{str(workbook_id)}'
+        
+        response = requests.get(url, 
+                                headers={'User-Agent': random.choice(self.user_agent_list)})
+        
+        html = response.text
+        soup = BeautifulSoup(html, 'html.parser')
+
+        table = soup.find(class_='table table-striped table-bordered')
+        rows = table.find_all('tr')
+        # table header 제거
+        rows = rows[1:]
+        
+        problem_list = list()
+        
+        for row in rows:
+            cols = row.find_all('td')            
+            cols = [ele.text.strip() for ele in cols]
+            problem_dict = deepcopy(workbook)
+            problem_dict["problem_id"] = cols[0]
+            problem_dict["problem_title"] = cols[1]
+            problem_dict["answer_num"] = cols[3]
+            problem_dict["submit_num"] = cols[4]
+            problem_dict["answer_rate"] = cols[5]
+            
+            problem_list.append(problem_dict)
+        
+        return problem_list
     
     
+    def save_to_csv(self, objects: list, file_name: str) -> None:
+        """Save a list of objects to a CSV file.
+
+        Args:
+            objects (list): A list of objects to save to a CSV file.
+            file_name (str): The name of the CSV file to save the objects to.
+        """
+        df = pd.DataFrame(objects)
+        if self.flag == 'problem':
+            df['id'] = df['id'].astype(int)
+            df = df.sort_values('id')  # Sort by 'id' column in ascending order
+            df.to_csv(file_name, index=False, encoding='utf-8-sig')
+            
+        elif self.flag == 'user':
+            df['rank'] = df['rank'].astype(int)
+            df = df.sort_values('rank')  # Sort by 'id' column in ascending order
+            df.to_csv(file_name, index=False, encoding='utf-8-sig')
+            
+        elif self.flag == 'workbook':
+            # Ensure 'id' column is int for correct sorting
+            df['workbook_rank'] = df['workbook_rank'].astype(int)
+
+            df.to_csv(file_name, index=False, encoding='utf-8-sig')
+        
+        else:
+            raise Exception('invalid flag')
+
+
     @staticmethod
     def user_api(user_id:str) -> dict:
      
@@ -146,28 +219,3 @@ class Scraper:
             pass
     
         return user_detail
-        
-        
-    
-    def save_to_csv(self, objects: list, file_name: str) -> None:
-        # problems -> id asc 별로 sort한 후 저장
-        df = pd.DataFrame(objects)
-        if self.flag == 'problem':
-            df['id'] = df['id'].astype(int)  # Ensure 'id' column is int for correct sorting
-            df = df.sort_values('id')  # Sort by 'id' column in ascending order
-            df.to_csv(file_name, index=False, encoding='utf-8-sig')
-        elif self.flag == 'user':
-            df['rank'] = df['rank'].astype(int)  # Ensure 'id' column is int for correct sorting
-            df = df.sort_values('rank')  # Sort by 'id' column in ascending order
-            df.to_csv(file_name, index=False, encoding='utf-8-sig')
-
-        else:
-            # Ensure 'id' column is int for correct sorting
-            df['rank'] = df['rank'].str.replace(',', '').astype(int)
-            df = df.sort_values('rank')  # Sort by 'id' column in ascending order
-            df.to_csv(file_name, index=False, encoding='utf-8-sig')
-
-
-    
-
-
