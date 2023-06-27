@@ -26,11 +26,14 @@ class Scraper:
         async with aiohttp.ClientSession() as session:  # 시스템의 DNS resolver를 사용하는 세션을 만듭니다.
             tasks = []
             for p_index in range(start, end+1):
+                await asyncio.sleep(random.randint(1,2)) # 스크래퍼 휴식
+                
                 if self.flag == 'problem':
                     task = asyncio.ensure_future(self.get_problem_parser(base_url=base_url, p_index=p_index, session=session))
                 elif self.flag == 'user':
                     task = asyncio.ensure_future(self.get_user_parser(base_url=base_url, p_index=p_index, session=session))
                 elif self.flag == 'workbook':
+                    
                     task = asyncio.ensure_future(self.get_workbook_parser(base_url=base_url, p_index=p_index, session=session))
                 tasks.append(task)
             await asyncio.gather(*tasks)
@@ -114,15 +117,14 @@ class Scraper:
                 cols = [ele.text.strip() for ele in cols]
 
                 workbook = dict()
-                # workbook["workbook_rank"] = self.workbook_rank
+                workbook["workbook_rank"] = self.workbook_rank
                 workbook["workbook_id"] = cols[0]
                 workbook["made_person"] = cols[1]
                 workbook["workbook_title"] = cols[2]
                 problem_list = await self.get_workbook_problems_parser(workbook=workbook ,base_url = base_url, session=session)
                 
                 self.workbooks.extend(problem_list)
-                
-                # self.workbook_rank += 1
+                self.workbook_rank += 1
 
     
     async def get_workbook_problems_parser(self, workbook:dict, base_url:str, session) -> list:

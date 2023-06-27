@@ -11,14 +11,14 @@ import os
 
 
 @task
-def scrape_user(url, start, end) -> list:
+def scrape_user(url:str, start:int, end:int) -> list:
     base_url = url
     start = start
     end = end
     start_time = time.time()
     scraper = async_crawler.Scraper(flag='user')
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(scraper.get_object_thread(base_url, start, end))
+    loop.run_until_complete(scraper.get_object_thread(base_url=base_url, start=start, end=end))
     loop.close()     
     
     # scraper.get_object_thread(base_url=url, start=start, end=end)
