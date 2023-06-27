@@ -42,7 +42,7 @@ default_args = {
 with DAG(
     dag_id='problem_scraper',
     default_args=default_args,
-    description='A user scraper DAG',
+    description='A problem_scraper DAG',
     schedule_interval='@once',
 ) as dag:
 

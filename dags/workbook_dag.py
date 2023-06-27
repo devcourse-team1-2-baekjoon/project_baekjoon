@@ -13,17 +13,20 @@ import pandas as pd
 
 @task
 def scrape_workbook_user(url, start, end, flag) -> list:
-
+    
+    print('start scrape_workbook_user task')
     start_time = time.time()
     scraper = crawler.Scraper(flag=flag)
     scraper.get_object_thread(base_url=url, start=start, end=end)
     end_time = time.time()
-    print(f'{start_time-end_time}seconds')
+    print(f'scrape_workbook_user {start_time-end_time} seconds')
     return scraper.workbooks
 
 
 @task
 def save_to_csv(scraper_object:list, flag:str) -> None:
+    
+    print('start save_to_csv task')
     scraper = crawler.Scraper(flag=flag)
     output_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
     if not os.path.exists(output_folder):
@@ -31,6 +34,7 @@ def save_to_csv(scraper_object:list, flag:str) -> None:
 
     file_path = os.path.join(output_folder, f"workbooks.csv")
     scraper.save_to_csv(objects=scraper_object, file_name=file_path)
+    print('end save_to_csv task')
     
     
 default_args = {
@@ -77,10 +81,6 @@ with DAG(
 #     # write the combined dataframe to a new csv file
 #     combined_file_path = os.path.join(output_folder, "combined_workbooks.csv")
 #     df_combined.to_csv(combined_file_path, index=False)
-    
-
-
-
     
     
     # start_indexes = list(range(1, 20, 4)) 

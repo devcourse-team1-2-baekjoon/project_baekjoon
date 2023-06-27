@@ -4,13 +4,14 @@ from datetime import datetime, timedelta
 import concurrent.futures
 from plugins import crawler
 from airflow.decorators import task # decorator 임포트
-
+import time
 import os
 
 
 @task
 def scrape_user(url, start, end) -> list:
 
+    start_time = time.time()
     scraper = crawler.Scraper(flag='user')
     scraper.get_object_thread(base_url=url, start=start, end=end)
 
@@ -19,6 +20,11 @@ def scrape_user(url, start, end) -> list:
     #     end_indexes = start_indexes[1:] + [271]
     #     executor.map(scraper.get_problems_thread, base_url, start_indexes, end_indexes)
     # context['ti'].xcom_push(key='user_scraper', value=scraper.users)
+    
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"Task 실행 시간: {execution_time}초")
+    
     return scraper.users
 
 @task

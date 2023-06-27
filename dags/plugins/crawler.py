@@ -1,11 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-import os 
 import time
 import random
-import concurrent.futures
-import ast
 from copy import deepcopy
 
 
@@ -29,7 +26,9 @@ class Scraper:
         
         else:
             for p_index in range(start, end+1):
-                time.sleep(random.randint(1,3))
+                
+                time.sleep(random.randint(1,2))
+                
                 if self.flag == 'problem':
                     self.get_problem_parser(base_url=base_url, p_index = p_index)
                 elif self.flag == 'user':
@@ -60,15 +59,15 @@ class Scraper:
             cols = [ele.text.strip() for ele in cols]
 
             problem = dict()
-            problem["id"] = cols[0]
-            problem["title"] = cols[1]
+            problem["problem_id"] = cols[0]
+            problem["problem_title"] = cols[1]
             problem["information"] = cols[2]
-            problem["answer_num"] = cols[3]
-            problem["submit_num"] = cols[4]
-            problem["answer_rate"] = float(cols[5].strip('%'))
+            problem["problem_answer_num"] = cols[3]
+            problem["problem_submit_num"] = cols[4]
+            problem["problem_answer_rate"] = float(cols[5].strip('%'))
             
             self.problems.append(problem)
-            print(problem)
+            # print(problem)
     
     
     def get_user_parser(self, base_url:str, p_index:int) -> None:
@@ -81,6 +80,7 @@ class Scraper:
         # print(table)
         rows = table.find_all('tr')
         # table header 제거
+        # 한번에 100개씩 총 1000번 가져옴 -> 35분 이상 걸림
         rows = rows[1:]
         for row in rows:
             cols = row.find_all('td')
@@ -88,16 +88,16 @@ class Scraper:
             cols = [ele.text.strip() for ele in cols]
 
             user = dict()
-            user["rank"] = cols[0]
-            user["id"] = cols[1]
+            user["user_rank"] = cols[0]
+            user["user_id"] = cols[1]
             user["status_message"] = cols[2]
-            user["answer_num"] = cols[3]
-            user["submit_num"] = cols[4]
-            user["answer_rate"] = float(cols[5].strip('%'))
+            user["user_answer_num"] = cols[3]
+            user["user_submit_num"] = cols[4]
+            user["user_answer_rate"] = float(cols[5].strip('%'))
             # user_detail = Scraper.user_api(user_id=user["id"])
             # user.update(user_detail)
             self.users.append(user)
-            print(user)
+            # print(user)
     
     
     def get_workbook_parser(self, base_url:str, p_index:int) -> None:
@@ -124,7 +124,7 @@ class Scraper:
             problem_list = self.get_workbook_problems_parser(workbook=workbook ,base_url = base_url)
             
             self.workbooks.extend(problem_list)
-            # print(problem_list)
+            
             self.workbook_rank += 1
 
     
@@ -142,20 +142,17 @@ class Scraper:
         table = soup.find(class_='table table-striped table-bordered')
         rows = table.find_all('tr')
         # table header 제거
-        rows = rows[1:]
-        
+        rows = rows[1:] 
         problem_list = list()
-        
         for row in rows:
             cols = row.find_all('td')            
             cols = [ele.text.strip() for ele in cols]
             problem_dict = deepcopy(workbook)
             problem_dict["problem_id"] = cols[0]
             problem_dict["problem_title"] = cols[1]
-            problem_dict["answer_num"] = cols[3]
-            problem_dict["submit_num"] = cols[4]
-            problem_dict["answer_rate"] = cols[5]
-            
+            # problem_dict["problem_answer_num"] = cols[3]
+            # problem_dict["problem_submit_num"] = cols[4]
+            # problem_dict["problem_answer_rate"] = cols[5]
             problem_list.append(problem_dict)
         
         return problem_list
@@ -170,25 +167,25 @@ class Scraper:
         """
         df = pd.DataFrame(objects)
         if self.flag == 'problem':
-            df['id'] = df['id'].astype(int)
-            df = df.sort_values('id')  # Sort by 'id' column in ascending order
+            df['problem_id'] = df['problem_id'].astype(int)
+            df = df.sort_values('problem_id')  # Sort by 'id' column in ascending order
             df.to_csv(file_name, index=False, encoding='utf-8-sig')
             
         elif self.flag == 'user':
-            df['rank'] = df['rank'].astype(int)
-            df = df.sort_values('rank')  # Sort by 'id' column in ascending order
+            df['user_rank'] = df['user_rank'].astype(int)
+            df = df.sort_values('user_rank')  # Sort by 'id' column in ascending order
             df.to_csv(file_name, index=False, encoding='utf-8-sig')
             
         elif self.flag == 'workbook':
             # Ensure 'id' column is int for correct sorting
             df['workbook_rank'] = df['workbook_rank'].astype(int)
-
             df.to_csv(file_name, index=False, encoding='utf-8-sig')
         
         else:
             raise Exception('invalid flag')
 
 
+'''
     @staticmethod
     def user_api(user_id:str) -> dict:
      
@@ -219,3 +216,5 @@ class Scraper:
             pass
     
         return user_detail
+'''
+
