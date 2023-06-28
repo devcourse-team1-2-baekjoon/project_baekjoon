@@ -1,7 +1,8 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from datetime import datetime, timedelta
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
+from datetime import datetime, timedelta
 from plugins import async_crawler
 from airflow.decorators import task # decorator 임포트
 
@@ -57,6 +58,14 @@ with DAG(
     schedule_interval='@once',
 ) as dag:
     
+    trigger_s3_upload = TriggerDagRunOperator(
+        task_id="trigger_bj_users_s3_upload_dag",
+        trigger_dag_id="bj_users_s3_upload_dag",
+        reset_dag_run=True, # True일 경우 해당 날짜가 이미 실행되었더라도 다시 재실행
+        wait_for_completion=True # DAG bj_users_s3_upload_dag가 끝날 때까지 기다릴지 여부를 결정. 디폴트값은 False
+    )
+    
+    
     url = "https://www.acmicpc.net/ranklist/"
     start = 1
     end = 1000
@@ -64,4 +73,4 @@ with DAG(
     scraper_objects = scrape_user(url, start, end)
     save_csv_task = save_to_csv(scraper_objects)
     # Define dependencies
-    scraper_objects >> save_csv_task
+    scraper_objects >> save_csv_task >> trigger_s3_upload
