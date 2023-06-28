@@ -1,14 +1,12 @@
-from airflow import DAG
-from airflow.operators.python import PythonOperator
-from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-
-from datetime import datetime
-from datetime import timedelta
-
-import requests
-import pandas as pd
+import logging
 import os
+from datetime import datetime, timedelta
 
+import pandas as pd
+import requests
+from airflow import DAG
+from airflow.decorators import task
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 # 리스트 만들기
 
@@ -68,21 +66,6 @@ def get_problem_id():
     df['id'] = df['id'].astype(str)
     problem_id = df['id'].tolist()
     return problem_id
-
-def get_page_all():
-    csv_file = os.path.join(os.getcwd(),'data','problem_list.csv')
-    problem_id = get_problem_id()
-    for i in range(len(problem_id) // 100 + 1):
-        start = i * 100
-        end = i * 100 + 99
-        res_json = get_page(problem_id[start:end])
-        df = transform(res_json)
-        if i == 0:
-            df.to_csv(csv_file, encoding='utf-8', index=False)
-        else:
-            df.to_csv(csv_file, mode='a', header=False, index=False)
-
-
 def get_page(problem_id):
     url = 'https://solved.ac/api/v3/problem/lookup/?problemIds='
     headers = {
@@ -91,6 +74,7 @@ def get_page(problem_id):
     param = bet_url.join(problem_id)
     final_url = url + param
     res = requests.get(final_url, headers=headers)
+    logging.debug(res)
     return res.json()
 
 def tags_apply(x):
@@ -112,11 +96,24 @@ def transform(response_json):
     df_ex = df.explode('tags_key')
     return df_ex
 
+@task
+def get_page_all():
+    csv_file = os.path.join(os.getcwd(),'data','problem_list.csv')
+    problem_id = get_problem_id()
+    for i in range(len(problem_id) // 100 + 1):
+        start = i * 100
+        end = i * 100 + 99
+        res_json = get_page(problem_id[start:end])
+        df = transform(res_json)
+        if i == 0:
+            df.to_csv(csv_file, encoding='utf-8', index=False)
+        else:
+            df.to_csv(csv_file, mode='a', header=False, index=False)
+@task
 def upload_local_file_to_s3():
     local_file_path = os.path.join(os.getcwd(),'data','problem_list.csv')
     s3_bucket_name = 'soomers-backjoon'
-    s3_file_key = 'engine/problemss.csv'
-
+    s3_file_key = 'engine/problems.csv'
     s3_hook = S3Hook(aws_conn_id='soomers_aws_conn_id')
     s3_hook.load_file(
         filename=local_file_path,
@@ -125,9 +122,7 @@ def upload_local_file_to_s3():
         replace=True
     )
 
-
-
-dag = DAG(
+with DAG(
     dag_id = 'problem_csv_to_s3',
     start_date = datetime(2023,6,23), # 날짜가 미래인 경우 실행이 안됨
     schedule = '0 0 * * *',  # 적당히 조절
@@ -137,17 +132,8 @@ dag = DAG(
         'retries': 1,
         'retry_delay': timedelta(minutes=3),
     }
-)
+) as dag :
+    paging = get_page_all()
+    uploading = upload_local_file_to_s3()
+    paging >> uploading
 
-get_local_csv_task = PythonOperator(
-    task_id = 'get_local_csv',
-    python_callable = get_page_all,
-    dag = dag)
-
-move_csv_task = PythonOperator(
-    task_id='move_csv',
-    python_callable=upload_local_file_to_s3,
-    dag=dag
-)
-
-get_local_csv_task >> move_csv_task
