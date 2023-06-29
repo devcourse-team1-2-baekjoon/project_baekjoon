@@ -1,10 +1,10 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from datetime import datetime, timedelta
-import concurrent.futures
 
 from airflow.decorators import task # decorator 임포트
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
+from datetime import datetime, timedelta
 import os
 import csv
 
@@ -20,7 +20,7 @@ def save_to_csv() -> None:
     csvfile = open(file_path, "w", newline="")
     csvwriter = csv.writer(csvfile)
 
-    header = ['level', 'rank']
+    header = ['user_tier', 'tier_name']
     csvwriter.writerow(header)
 
     data = ['Unrated',
@@ -63,6 +63,20 @@ def save_to_csv() -> None:
 
     print(file_path)
 
+@task
+def upload_to_s3():
+    local_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/level.csv")
+    s3_hook = S3Hook('aws_defalut') 
+    s3_bucket = 'baekjoon-project-pipeline'
+    s3_key = 'CSV_load_to_S3/level.csv'
+    s3_hook.load_file(
+        filename = local_file_path,
+        key = s3_key,
+        bucket_name = s3_bucket,
+        replace = True
+    )
+
+    print(f"File uploaded to S3: s3://{s3_bucket}/{s3_key}")
 
 default_args = {
     'owner': 'airflow',
@@ -73,11 +87,21 @@ default_args = {
 }
 
 with DAG(
-    'save_level_csv',
+    'level_csv_to_s3',
     default_args=default_args,
-    description='save level info to csv DAG',
+    description='save level info to csv and upload to s3 DAG',
     schedule_interval='@once',
 ) as dag:
     
-    save_to_csv()
+    save_to_csv_task = PythonOperator(
+        task_id = 'save_to_csv_task',
+        python_callable = save_to_csv
+    )
+
+    upload_to_s3_task = PythonOperator(
+        task_id = 'upload_to_s3_task',
+        python_callable = upload_to_s3
+    )
+    
     # Define dependencies
+    save_to_csv_task >> upload_to_s3_task
