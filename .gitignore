@@ -10,6 +10,10 @@ __pycache__/
 logs/*
 data/*
 
+.env
+
+lambda/scraper/data/*
+
 ## chrome driver
 chromedriver
 
