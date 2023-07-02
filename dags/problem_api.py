@@ -42,23 +42,23 @@ new_columns = ['problemId',
  'official',
  'tags']
 
-columns_naming = ['problemId',
- 'titleKo',
- 'titles_language',
- 'titles_languageDisplayName',
- 'titles_title',
- 'titles_isOriginal',
- 'isSolvable',
- 'isPartial',
- 'acceptedUserCount',
- 'level',
- 'votedUserCount',
- 'sprout',
- 'givesNoRating',
- 'isLevelLocked',
- 'averageTries',
- 'official',
- 'tags_key']
+columns_naming = ['problem_id',
+ 'problem_title',
+ 'problem_lang',
+ 'tag_display_lang',
+ 'tag_name',
+ 'problem_titles_isOriginal',
+ 'problem_isSolvable',
+ 'problem_isPartial',
+ 'problem_answer_num',
+ 'problem_level',
+ 'problem_votedUserCount',
+ 'problem_sprout',
+ 'problem_givesNoRating',
+ 'problem_isLevelLocked',
+ 'problem_averageTries',
+ 'problem_official',
+ 'tag_key']
 
 def get_problem_id():
     path = os.path.join(os.getcwd(),'data','problems.csv')
@@ -93,7 +93,7 @@ def transform(response_json):
     df['tags'] = df['tags'].apply(tags_apply)
     df = df[new_columns]
     df.columns = columns_naming
-    df_ex = df.explode('tags_key')
+    df_ex = df.explode('tag_key')
     return df_ex
 
 @task
