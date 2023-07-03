@@ -69,6 +69,32 @@ def upload_to_s3():
     )
     print(f"File uploaded to S3: s3://{bucket_name}/{s3_key}")
 
+@task
+def trigger_glue_crawler(aws_conn_id: str, crawler_name: str, region_name: str = None):
+    hook = AwsBaseHook(
+        aws_conn_id, client_type="glue", region_name=region_name
+    )
+    glue_client = hook.get_conn()
+
+    print("Triggering crawler")
+    response = glue_client.start_crawler(Name=crawler_name)
+
+    if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
+        raise RuntimeError(
+            "An error occurred while triggering the crawler: %r" % response
+        )
+
+    print("Waiting for crawler to finish")
+    while True:
+        time.sleep(1)
+
+        crawler = glue_client.get_crawler(Name=crawler_name)
+        crawler_state = crawler["Crawler"]["State"]
+
+        if crawler_state == "READY":
+            print("Crawler finished running")
+            break
+
 
 default_args = {
     'owner': 'airflow',
@@ -92,7 +118,13 @@ with DAG('problem_tag_dag',
         task_id='upload_to_s3_task',
         python_callable=upload_to_s3
     )
+    trigger_crawler_task = PythonOperator(
+        task_id='trigger_crawler_task',
+        python_callable=trigger_glue_crawler,
+        op_kwargs={
+            'aws_conn_id': 'problem_tags',
+            'crawler_name': 'athena-problemTag-crawler',
+            'region_name': 'us-west-2'
 
 
-
-    collect_tags_task >> upload_to_s3_task
+    collect_tags_task >> upload_to_s3_task >> trigger_crawler_task
