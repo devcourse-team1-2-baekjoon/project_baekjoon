@@ -3,7 +3,7 @@ from airflow.operators.python import PythonOperator
 
 from airflow.decorators import task # decorator 임포트
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-
+from airflow.providers.amazon.aws.hooks.base_aws import AwsBaseHook
 from datetime import datetime, timedelta
 import os
 import csv
