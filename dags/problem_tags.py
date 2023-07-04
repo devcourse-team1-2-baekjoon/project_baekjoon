@@ -27,7 +27,7 @@ def collect_tags_and_save_to_csv():
     page = 1
     with open(file_path, 'w', encoding='utf-8', newline='') as csv_file:
         writer = csv.writer(csv_file)
-        header = ['key','bojTagId','displayNames_language', 'displayNames_name', 'displayNames_short']
+        header = ['tag_key','tag_id','tag_problem_num','tag_display_lang','tag_name', 'tag_name_short']
         writer.writerow(header)
         while True:
             params = {"query": '', "page": page}
