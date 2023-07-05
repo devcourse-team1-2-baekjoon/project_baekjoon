@@ -17,9 +17,26 @@
 | 백준 | 문제집 데이터 | 백준에서 삼성기출문제처럼 문제집과 문제의 ID를 담고 있는 정보 | 
 
 # 🔗 데이터 파이프라인
-![img_1.png](img_1.png)
+
+![data pipeline](img/img_1.png)
+- scrape: 웹 스크래핑 작업을 수행. 웹 페이지에서 필요한 데이터를 추출하는 과정
+
+- s3_load: 스크래핑한 데이터를 Amazon S3에 로드하는 작업을 수행.
+
+- crawler task: AWS Glue라는 완전 관리형 ETL(Extract, Transform, Load) 서비스를 사용하여 S3에 저장된 데이터를 읽고, 데이터 카탈로그를 생성하는 작업. 데이터 카탈로그는 데이터를 쿼리할 수 있도록 메타데이터를 저장하는 데이터베이스.
+
+- athena query task: AWS Athena라는 서버리스 쿼리 서비스를 사용하여 Glue에서 생성한 데이터 카탈로그에 대해 SQL 쿼리를 실행하는 작업
+
+- s3 to RDS(postgresql) task: Athena에서 쿼리한 결과를 다시 S3에 저장한 후, 이를 Amazon RDS(Relational Database Service)의 PostgreSQL 데이터베이스에 로드하는 작업
+
 # 📚 DB ERD
-![img.png](img.png)
+
+### Raw-Data ERD
+![rawdata_erd](img/백준_ERD.jpeg)
+
+
+### Data-Mart ERD (Denormalized)
+![Mart_erd](img/img.png)
 
 # 🔨 Tech Skill
 | Role          | Stack                                                                                                                                                                                              |
