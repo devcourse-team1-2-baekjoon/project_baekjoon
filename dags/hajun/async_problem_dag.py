@@ -107,10 +107,4 @@ with DAG(
     scraper_objects >> save_to_csv_task >> upload_task >> upload_message_task >> trigger_athena
     
     
-    # trigger_s3_upload = TriggerDagRunOperator(
-    #     task_id="trigger_problem_s3_upload_dag",
-    #     trigger_dag_id="problem_s3_upload_dag",
-    #     reset_dag_run=True, # True일 경우 해당 날짜가 이미 실행되었더라도 다시 재실행
-    #     wait_for_completion=True # DAG B가 끝날 때까지 기다릴지 여부를 결정. 디폴트값은 False
-    # )
 

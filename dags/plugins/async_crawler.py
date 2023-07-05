@@ -59,7 +59,7 @@ class Scraper:
                 problem = dict()
                 problem["problem_id"] = cols[0]
                 problem["problem_title"] = cols[1]
-                problem["information"] = cols[2]
+                problem["problem_info"] = cols[2]
                 problem["problem_answer_num"] = cols[3]
                 problem["problem_submit_num"] = cols[4]
                 problem["problem_answer_rate"] = float(cols[5].strip('%'))
@@ -118,7 +118,7 @@ class Scraper:
                 workbook = dict()
                 workbook["workbook_rank"] = self.workbook_rank
                 workbook["workbook_id"] = cols[0]
-                workbook["made_person"] = cols[1]
+                workbook["user_id"] = cols[1]
                 workbook["workbook_title"] = cols[2]
                 problem_list = await self.get_workbook_problems_parser(workbook=workbook ,base_url = base_url, session=session)
                 
