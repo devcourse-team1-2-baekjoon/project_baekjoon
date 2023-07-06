@@ -126,6 +126,7 @@ with DAG('problem_tag_dag',
             'aws_conn_id': 'problem_tags',
             'crawler_name': 'athena-problemTag-crawler',
             'region_name': 'us-west-2'
-
+        }
+    )
 
     collect_tags_task >> upload_to_s3_task >> trigger_crawler_task
