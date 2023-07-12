@@ -7,6 +7,7 @@ from airflow.providers.amazon.aws.hooks.base_aws import AwsBaseHook
 from datetime import datetime, timedelta
 import os
 import csv
+import time
 
 @task
 def save_to_csv() -> None:
@@ -15,12 +16,12 @@ def save_to_csv() -> None:
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    file_path = os.path.join(output_folder, "level.csv")
+    file_path = os.path.join(output_folder, "tier_detail.csv")
     
     csvfile = open(file_path, "w", newline="")
     csvwriter = csv.writer(csvfile)
 
-    header = ['user_tier', 'tier_name']
+    header = ['tier_level', 'tier_name']
     csvwriter.writerow(header)
 
     data = ['Unrated',
@@ -66,9 +67,9 @@ def save_to_csv() -> None:
 @task
 def upload_to_s3():
     local_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/level.csv")
-    s3_hook = S3Hook('aws_defalut') 
-    s3_bucket = 'baekjoon-project-pipeline'
-    s3_key = 'CSV_load_to_S3/level.csv'
+    s3_hook = S3Hook(aws_conn_id='hajun_aws_conn_id') 
+    s3_bucket = 'airflow-bucket-hajun'
+    s3_key = 'tier_detail/tier_detail.csv'
     s3_hook.load_file(
         filename = local_file_path,
         key = s3_key,
@@ -78,31 +79,6 @@ def upload_to_s3():
 
     print(f"File uploaded to S3: s3://{s3_bucket}/{s3_key}")
 
-@task
-def trigger_glue_crawler(aws_conn_id: str, crawler_name: str, region_name: str = None):
-    hook = AwsBaseHook(
-        aws_conn_id, client_type="glue", region_name=region_name
-    )
-    glue_client = hook.get_conn()
-
-    print("Triggering crawler")
-    response = glue_client.start_crawler(Name=crawler_name)
-
-    if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
-        raise RuntimeError(
-            "An error occurred while triggering the crawler: %r" % response
-        )
-
-    print("Waiting for crawler to finish")
-    while True:
-        time.sleep(1)
-
-        crawler = glue_client.get_crawler(Name=crawler_name)
-        crawler_state = crawler["Crawler"]["State"]
-
-        if crawler_state == "READY":
-            print("Crawler finished running")
-            break
 
 default_args = {
     'owner': 'airflow',
@@ -119,22 +95,9 @@ with DAG(
     schedule_interval='@once',
 ) as dag:
     
-    save_to_csv_task = PythonOperator(
-        task_id = 'save_to_csv_task',
-        python_callable = save_to_csv
-    )
-
-    upload_to_s3_task = PythonOperator(
-        task_id = 'upload_to_s3_task',
-        python_callable = upload_to_s3
-    )
-    trigger_crawler_task = PythonOperator(
-        task_id='trigger_crawler_task',
-        python_callable=trigger_glue_crawler,
-        op_kwargs={
-            'aws_conn_id': 'problem_level',
-            'crawler_name': 'athena-problemlevel-crawler',
-            'region_name': 'us-west-2'
+    save_to_csv_task = save_to_csv()
     
-    # Define dependencies
-    save_to_csv_task >> upload_to_s3_task >> trigger_crawler_task
+    # upload_to_s3_task = upload_to_s3()
+    
+    save_to_csv_task 
+    

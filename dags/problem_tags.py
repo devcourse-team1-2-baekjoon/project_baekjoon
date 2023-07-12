@@ -1,26 +1,34 @@
 from airflow.decorators import task
 from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 import os
 import time
 import requests
-from fake_useragent import UserAgent
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-from airflow.providers.amazon.aws.hooks.base_aws import AwsBaseHook
+import csv
+import logging
+import random
+
+# Set up logging
+logger = logging.getLogger(__name__)
+
 
 @task
-def collect_tags_and_save_to_csv():
-    ua = UserAgent()
-    url = "https://solved.ac/api/v3/search/tag"
+def collect_tags_and_save_to_csv(url:str) -> None:
+    logger.info('Collecting tags and saving to CSV')
+    ua_list = [
+            'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.83 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36'
+            ]   
+    headers = {'User-Agent': random.choice(ua_list)}
+    
     output_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
     
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
-    file_path = os.path.join(output_folder, "problem_tags.csv")
-
-    headers = {"User-agent": ua.random}
+    file_path = os.path.join(output_folder, "problem_tag.csv")
 
     params = {"query": '', "page": '0'}
 
@@ -29,6 +37,7 @@ def collect_tags_and_save_to_csv():
         writer = csv.writer(csv_file)
         header = ['tag_key','tag_id','tag_problem_num','tag_display_lang','tag_name', 'tag_name_short']
         writer.writerow(header)
+        
         while True:
             params = {"query": '', "page": page}
             response = requests.get(url, headers=headers, params=params)
@@ -55,12 +64,17 @@ def collect_tags_and_save_to_csv():
                     writer.writerow(new_item.values())
 
             page += 1
+            
+    logger.info('Finished collecting tags')
 
-def upload_to_s3():
-    s3_hook = S3Hook(aws_conn_id='problem_tags') # conn_id 입력
-    bucket_name = 'juhye-baekjoon' #bucket name 입력
-    local_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/problems_tags.csv")
-    s3_key = 'problems_tags.csv'
+
+
+@task
+def upload_to_s3(aws_conn_id:str) -> None:
+    s3_hook = S3Hook(aws_conn_id=aws_conn_id) # conn_id 입력
+    bucket_name = 'airflow-bucket-hajun' #bucket name 입력
+    local_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data/problem_tag.csv")
+    s3_key = 'problem_tag/problem_tag.csv'
     
     s3_hook.load_file(
         filename=local_file_path,
@@ -68,33 +82,8 @@ def upload_to_s3():
         bucket_name=bucket_name,
         replace=True
     )
-    print(f"File uploaded to S3: s3://{bucket_name}/{s3_key}")
+    logger.info(f"File uploaded to S3: s3://{bucket_name}/{s3_key}")
 
-@task
-def trigger_glue_crawler(aws_conn_id: str, crawler_name: str, region_name: str = None):
-    hook = AwsBaseHook(
-        aws_conn_id, client_type="glue", region_name=region_name
-    )
-    glue_client = hook.get_conn()
-
-    print("Triggering crawler")
-    response = glue_client.start_crawler(Name=crawler_name)
-
-    if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
-        raise RuntimeError(
-            "An error occurred while triggering the crawler: %r" % response
-        )
-
-    print("Waiting for crawler to finish")
-    while True:
-        time.sleep(1)
-
-        crawler = glue_client.get_crawler(Name=crawler_name)
-        crawler_state = crawler["Crawler"]["State"]
-
-        if crawler_state == "READY":
-            print("Crawler finished running")
-            break
 
 
 default_args = {
@@ -111,22 +100,9 @@ with DAG('problem_tag_dag',
         schedule_interval='@once'
     ) as dag:
 
-    collect_tags_task = PythonOperator(
-        task_id="collect_tags_task",
-        python_callable=collect_tags_and_save_to_csv
-    )
-    upload_to_s3_task = PythonOperator(
-        task_id='upload_to_s3_task',
-        python_callable=upload_to_s3
-    )
-    trigger_crawler_task = PythonOperator(
-        task_id='trigger_crawler_task',
-        python_callable=trigger_glue_crawler,
-        op_kwargs={
-            'aws_conn_id': 'problem_tags',
-            'crawler_name': 'athena-problemTag-crawler',
-            'region_name': 'us-west-2'
-        }
-    )
+    url = "https://solved.ac/api/v3/search/tag"
+    aws_conn_id = 'hajun_aws_conn_id'
+    collect_tags_task = collect_tags_and_save_to_csv(url=url)
+    # upload_task = upload_to_s3(aws_conn_id=aws_conn_id)
 
-    collect_tags_task >> upload_to_s3_task >> trigger_crawler_task
+    collect_tags_task 
