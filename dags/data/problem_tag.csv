@@ -1,0 +1,201 @@
+tag_key,tag_id,tag_problem_num,tag_display_lang,tag_name,tag_name_short
+math,124,5261,ko,수학,수학
+implementation,102,4520,ko,구현,구현
+dp,25,3378,ko,다이나믹 프로그래밍,다이나믹 프로그래밍
+data_structures,175,3099,ko,자료 구조,자료 구조
+graphs,7,3094,ko,그래프 이론,그래프 이론
+string,158,1985,ko,문자열,문자열
+greedy,33,1961,ko,그리디 알고리즘,그리디 알고리즘
+bruteforcing,125,1825,ko,브루트포스 알고리즘,브루트포스 알고리즘
+graph_traversal,11,1715,ko,그래프 탐색,그래프 탐색
+sorting,97,1492,ko,정렬,정렬
+geometry,100,1209,ko,기하학,기하학
+number_theory,95,1186,ko,정수론,정수론
+trees,120,1131,ko,트리,트리
+segtree,65,1082,ko,세그먼트 트리,세그먼트 트리
+binary_search,12,1008,ko,이분 탐색,이분 탐색
+ad_hoc,109,995,ko,애드 혹,애드 혹
+arithmetic,121,883,ko,사칙연산,사칙연산
+simulation,141,859,ko,시뮬레이션,시뮬레이션
+bfs,126,856,ko,너비 우선 탐색,너비 우선 탐색
+constructive,128,737,ko,해 구성하기,해 구성하기
+prefix_sum,139,727,ko,누적 합,누적 합
+combinatorics,6,710,ko,조합론,조합론
+dfs,127,686,ko,깊이 우선 탐색,깊이 우선 탐색
+case_work,137,644,ko,많은 조건 분기,많은 조건 분기
+bitmask,14,602,ko,비트마스킹,비트마스킹
+dijkstra,22,484,ko,데이크스트라,데이크스트라
+hash_set,136,471,ko,해시를 사용한 집합과 맵,해시를 사용한 집합과 맵
+backtracking,5,419,ko,백트래킹,백트래킹
+sweeping,106,394,ko,스위핑,스위핑
+tree_set,74,393,ko,트리를 사용한 집합과 맵,트리를 사용한 집합과 맵
+parsing,96,378,ko,파싱,파싱
+disjoint_set,81,378,ko,분리 집합,분리 집합
+divide_and_conquer,24,360,ko,분할 정복,분할 정복
+dp_tree,92,343,ko,트리에서의 다이나믹 프로그래밍,트리에서의 다이나믹 프로그래밍
+priority_queue,59,342,ko,우선순위 큐,우선순위 큐
+stack,71,317,ko,스택,스택
+two_pointer,80,308,ko,두 포인터,두 포인터
+game_theory,140,283,ko,게임 이론,게임 이론
+parametric_search,170,282,ko,매개 변수 탐색,매개 변수 탐색
+flow,45,281,ko,최대 유량,최대 유량
+primality_test,9,273,ko,소수 판정,소수 판정
+lazyprop,66,252,ko,느리게 갱신되는 세그먼트 트리,느리게 갱신되는 세그먼트 트리
+dp_bitfield,87,252,ko,비트필드를 이용한 다이나믹 프로그래밍,비트필드를 이용한 다이나믹 프로그래밍
+probability,177,227,ko,확률론,확률론
+exponentiation_by_squaring,39,227,ko,분할 정복을 이용한 거듭제곱,분할 정복을 이용한 거듭제곱
+arbitrary_precision,117,222,ko,임의 정밀도 / 큰 수 연산,임의 정밀도 / 큰 수 연산
+offline_queries,123,210,ko,오프라인 쿼리,오프라인 쿼리
+recursion,62,193,ko,재귀,재귀
+knapsack,148,185,ko,배낭 문제,배낭 문제
+precomputation,172,178,ko,런타임 전의 전처리,런타임 전의 전처리
+sieve,67,174,ko,에라토스테네스의 체,에라토스테네스의 체
+mst,49,173,ko,최소 스패닝 트리,최소 스패닝 트리
+coordinate_compression,161,173,ko,값 / 좌표 압축,값 / 좌표 압축
+euclidean,26,159,ko,유클리드 호제법,유클리드 호제법
+bipartite_matching,13,159,ko,이분 매칭,이분 매칭
+topological_sorting,78,152,ko,위상 정렬,위상 정렬
+floyd_warshall,31,151,ko,플로이드–워셜,플로이드–워셜
+lca,41,144,ko,최소 공통 조상,최소 공통 조상
+linear_algebra,144,143,ko,선형대수학,선형대수학
+hashing,8,141,ko,해싱,해싱
+convex_hull,20,136,ko,볼록 껍질,볼록 껍질
+scc,76,133,ko,강한 연결 요소,강한 연결 요소
+inclusion_and_exclusion,38,128,ko,포함 배제의 원리,포함 배제의 원리
+randomization,115,122,ko,무작위화,무작위화
+sparse_table,84,118,ko,희소 배열,희소 배열
+fft,28,109,ko,고속 푸리에 변환,고속 푸리에 변환
+trie,79,107,ko,트라이,트라이
+smaller_to_larger,169,95,ko,작은 집합에서 큰 집합으로 합치는 테크닉,작은 집합에서 큰 집합으로 합치는 테크닉
+mcmf,48,94,ko,최소 비용 최대 유량,최소 비용 최대 유량
+line_intersection,42,92,ko,선분 교차 판정,선분 교차 판정
+sqrt_decomposition,130,92,ko,제곱근 분할법,제곱근 분할법
+deque,73,91,ko,덱,덱
+suffix_array,77,87,ko,접미사 배열과 LCP 배열,접미사 배열과 LCP 배열
+geometry_3d,131,86,ko,3차원 기하학,3차원 기하학
+cht,89,85,ko,볼록 껍질을 이용한 최적화,볼록 껍질을 이용한 최적화
+calculus,111,85,ko,미적분학,미적분학
+heuristics,142,80,ko,휴리스틱,휴리스틱
+sprague_grundy,70,80,ko,스프라그–그런디 정리,스프라그–그런디 정리
+sliding_window,68,79,ko,슬라이딩 윈도우,슬라이딩 윈도우
+euler_tour_technique,150,77,ko,오일러 경로 테크닉,오일러 경로 테크닉
+mitm,46,76,ko,중간에서 만나기,중간에서 만나기
+centroid,188,74,ko,센트로이드,센트로이드
+ternary_search,101,74,ko,삼분 탐색,삼분 탐색
+lis,43,72,ko,가장 긴 증가하는 부분 수열: O(n log n),가장 긴 증가하는 부분 수열: O(n log n)
+pythagoras,60,71,ko,피타고라스 정리,피타고라스 정리
+hld,35,69,ko,Heavy-light 분할,Heavy-light 분할
+kmp,40,69,ko,KMP,KMP
+gaussian_elimination,32,68,ko,가우스 소거법,가우스 소거법
+bitset,152,67,ko,비트 집합,비트 집합
+centroid_decomposition,18,67,ko,센트로이드 분할,센트로이드 분할
+permutation_cycle_decomposition,171,66,ko,순열 사이클 분할,순열 사이클 분할
+modular_multiplicative_inverse,164,65,ko,모듈로 곱셈 역원,모듈로 곱셈 역원
+mfmc,167,61,ko,최대 유량 최소 컷 정리,최대 유량 최소 컷 정리
+physics,116,53,ko,물리학,물리학
+eulerian_path,93,53,ko,오일러 경로,오일러 경로
+queue,72,52,ko,큐,큐
+2_sat,1,51,ko,2-sat,2-sat
+articulation,4,50,ko,단절점과 단절선,단절점과 단절선
+tsp,138,45,ko,외판원 순회 문제,외판원 순회 문제
+0_1_bfs,176,45,ko,0-1 너비 우선 탐색,0-1 너비 우선 탐색
+linearity_of_expectation,179,45,ko,기댓값의 선형성,기댓값의 선형성
+pst,55,43,ko,퍼시스턴트 세그먼트 트리,퍼시스턴트 세그먼트 트리
+flt,29,42,ko,페르마의 소정리,페르마의 소정리
+polygon_area,3,42,ko,다각형의 넓이,다각형의 넓이
+crt,19,37,ko,중국인의 나머지 정리,중국인의 나머지 정리
+cactus,143,37,ko,선인장,선인장
+biconnected_component,153,36,ko,이중 연결 요소,이중 연결 요소
+mo,50,34,ko,mo's,Mo's
+bellman_ford,10,33,ko,벨만–포드,벨만–포드
+planar_graph,168,33,ko,평면 그래프,평면 그래프
+pigeonhole_principle,189,32,ko,비둘기집 원리,비둘기집
+pbs,54,31,ko,병렬 이분 탐색,병렬 이분 탐색
+euler_phi,151,31,ko,오일러 피 함수,오일러 피 함수
+point_in_convex_polygon,56,31,ko,볼록 다각형 내부의 점 판정,볼록 다각형 내부의 점 판정
+linked_list,154,30,ko,연결 리스트,연결 리스트
+bipartite_graph,197,30,ko,이분 그래프,이분 그래프
+extended_euclidean,27,30,ko,확장 유클리드 호제법,확장 유클리드 호제법
+divide_and_conquer_optimization,91,29,ko,분할 정복을 사용한 최적화,분할 정복을 사용한 최적화
+splay_tree,69,28,ko,스플레이 트리,스플레이 트리
+multi_segtree,166,27,ko,다차원 세그먼트 트리,다차원 세그먼트 트리
+berlekamp_massey,110,26,ko,벌리캠프–매시,벌리캠프–매시
+rotating_calipers,64,25,ko,회전하는 캘리퍼스,회전하는 캘리퍼스
+euler_characteristic,119,25,ko,오일러 지표 (χ=V-E+F),오일러 지표
+regex,63,24,ko,정규 표현식,정규 표현식
+dp_deque,108,24,ko,덱을 이용한 다이나믹 프로그래밍,덱을 이용한 다이나믹 프로그래밍
+aho_corasick,2,24,ko,아호-코라식,아호-코라식
+merge_sort_tree,155,24,ko,머지 소트 트리,머지 소트 트리
+slope_trick,157,22,ko,함수 개형을 이용한 최적화,함수 개형을 이용한 최적화
+link_cut_tree,98,22,ko,링크/컷 트리,링크/컷 트리
+manacher,44,21,ko,매내처,매내처
+rabin_karp,61,21,ko,라빈–카프,라빈–카프
+dp_connection_profile,107,21,ko,커넥션 프로파일을 이용한 다이나믹 프로그래밍,커넥션 프로파일을 이용한 다이나믹 프로그래밍
+half_plane_intersection,190,21,ko,반평면 교집합,반평면 교집합
+mobius_inversion,51,20,ko,뫼비우스 반전 공식,뫼비우스 반전 공식
+pollard_rho,58,19,ko,폴라드 로,폴라드 로
+tree_isomorphism,145,19,ko,트리 동형 사상,트리 동형 사상
+miller_rabin,47,18,ko,밀러–라빈 소수 판별법,밀러–라빈 소수 판별법
+hall,34,17,ko,홀의 결혼 정리,홀의 결혼 정리
+hungarian,36,17,ko,헝가리안,헝가리안
+linear_programming,103,17,ko,선형 계획법,선형 계획법
+simulated_annealing,184,16,ko,담금질 기법,담금질 기법
+circulation,191,15,ko,서큘레이션,서큘레이션
+numerical_analysis,122,15,ko,수치해석,수치해석
+point_in_non_convex_polygon,57,15,ko,오목 다각형 내부의 점 판정,오목 다각형 내부의 점 판정
+alien,134,14,ko,Aliens 트릭,aliens 트릭
+statistics,178,14,ko,통계학,통계학
+dual_graph,181,13,ko,쌍대 그래프,쌍대 그래프
+offline_dynamic_connectivity,52,13,ko,오프라인 동적 연결성 판정,오프라인 동적 연결성 판정
+lucas,113,12,ko,뤼카 정리,뤼카 정리
+duality,180,12,ko,쌍대성,쌍대성
+voronoi,82,12,ko,보로노이 다이어그램,보로노이 다이어그램
+dp_sum_over_subsets,207,12,ko,부분집합의 합 다이나믹 프로그래밍,부분집합의 합
+general_matching,15,11,ko,일반적인 매칭,일반적인 매칭
+matroid,104,10,ko,매트로이드,매트로이드
+kitamasa,112,10,ko,키타마사,키타마사
+generating_function,198,10,ko,생성 함수,생성 함수
+discrete_log,146,9,ko,이산 로그,이산 로그
+tree_decomposition,204,9,ko,트리 분할,트리 분할
+min_enclosing_circle,162,9,ko,최소 외접원,최소 외접원
+burnside,16,8,ko,번사이드 보조정리,번사이드 보조정리
+tree_compression,193,8,ko,트리 압축,트리 압축
+bidirectional_search,129,8,ko,양방향 탐색,양방향 탐색
+utf8,199,7,ko,utf-8 입력 처리,utf-8
+dominator_tree,135,7,ko,도미네이터 트리,도미네이터 트리
+palindrome_tree,53,7,ko,회문 트리,회문 트리
+stable_marriage,192,7,ko,안정 결혼 문제,안정 결혼
+monotone_queue_optimization,165,7,ko,단조 큐를 이용한 최적화,단조 큐를 이용한 최적화
+z,83,6,ko,z,Z
+knuth,90,6,ko,크누스 최적화,크누스 최적화
+knuth_x,174,6,ko,크누스 X,크누스 X
+top_tree,105,6,ko,탑 트리,탑 트리
+dancing_links,173,6,ko,춤추는 링크,춤추는 링크
+discrete_sqrt,147,6,ko,이산 제곱근,이산 제곱근
+cartesian_tree,206,6,ko,데카르트 트리,데카르트 트리
+pick,187,5,ko,픽의 정리,픽
+rope,159,5,ko,로프,로프
+bayes,114,5,ko,베이즈 정리,베이즈 정리
+suffix_tree,182,5,ko,접미사 트리,접미사 트리
+geometry_hyper,132,5,ko,4차원 이상의 기하학,4차원 이상의 기하학
+green,183,4,ko,그린 정리,그린
+delaunay,21,4,ko,델로네 삼각분할,델로네 삼각분할
+hirschberg,163,4,ko,히르쉬버그,히르쉬버그
+directed_mst,23,4,ko,유향 최소 신장 트리,유향 최소 신장 트리
+stoer_wagner,75,4,ko,스토어–바그너,스토어–바그너
+chordal_graph,201,4,ko,현 그래프,현 그래프
+degree_sequence,200,4,ko,차수열,차수열
+majority_vote,160,3,ko,보이어–무어 다수결 투표,보이어–무어 다수결 투표
+gradient_descent,208,3,ko,경사 하강법,경사 하강법
+lte,212,2,ko,지수승강 보조정리,지수승강
+hackenbush,205,2,ko,하켄부시 게임,하켄부시 게임
+differential_cryptanalysis,185,2,ko,차분 공격,차분 공격
+geometric_boolean_operations,202,2,ko,도형에서의 불 연산,도형에서의 불 연산
+a_star,186,1,ko,a*,a*
+rb_tree,94,1,ko,레드-블랙 트리,레드-블랙 트리
+birthday,203,1,ko,생일 문제,생일
+functional_graph,211,1,ko,함수형 그래프,함수형 그래프
+discrete_kth_root,149,1,ko,이산 k제곱근,이산 k제곱근
+multipoint_evaluation,196,1,ko,다중 대입값 계산,다중 계산
+polynomial_interpolation,209,1,ko,다항식 보간법,다항식 보간법
+flood_fill,210,0,ko,플러드 필,플러드 필
