@@ -106,7 +106,11 @@ def transform(response_json):
 
 @task
 def get_page_all():
-    csv_file = os.path.join(os.getcwd(),'data','problem_detail.csv')
+    output_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+        
+    csv_file = os.path.join(output_folder,'problem_detail.csv')
     problem_id = get_problem_id()
     for i in range(len(problem_id) // 100 + 1):
         start = i * 100
