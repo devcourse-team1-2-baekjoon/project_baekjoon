@@ -127,11 +127,11 @@ def collect_data_and_save_to_csv(delay: float) -> None:
 
 
 @task
-def upload_local_file_to_s3():
+def upload_local_file_to_s3(aws_conn_id:str, s3_bucket_name:str) -> None:
     local_file_path = os.path.join(os.getcwd(),'data','users_detail.csv')
-    s3_bucket_name = 's3_bucket_name'
     s3_file_key = 'users_detail/users_detail.csv'
-    s3_hook = S3Hook(aws_conn_id='hajun_aws_conn_id')
+    
+    s3_hook = S3Hook(aws_conn_id=aws_conn_id)
     s3_hook.load_file(
         filename=local_file_path,
         key=s3_file_key,
@@ -152,8 +152,11 @@ with DAG(
 ) as dag:
     requests_per_second = 300 / (15 * 60) 
     delay = 1 / requests_per_second
+    
+    aws_conn_id = 'hajun_aws_conn_id'
+    s3_bucket_name = 'airflow-bucket-hajun'
 
     user_detail_data_collection_task = collect_data_and_save_to_csv(delay=delay)
-    upload_task = upload_local_file_to_s3()
+    upload_task = upload_local_file_to_s3(aws_conn_id=aws_conn_id, s3_bucket_name=s3_bucket_name)
 
     user_detail_data_collection_task >> upload_task
